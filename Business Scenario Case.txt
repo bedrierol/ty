@@ -1,0 +1,16 @@
+
+yilsonu 90 banka
+tek islemde 30+ transactional operation
+
+Sürekli artan entegrasyon ihtiyacını karışlayabilecek bir mimari tasarım önerisi
+	Farkli teknolojiler ve procedurler nedeni ile API entegrasyon paket platformlar ile bu tip flowlar ve entegrasyonlar cok hizli hazirlanip, degistirilebilmektedir.
+	In House bir cozum icin, 
+		Farkli teknolojiler ve sistemler oldugu icin bu farkli tip verileri ortaklastiracak bir veri tipi secimi: JSON - XML
+		yuksek hizli ve scale olabilen bir mesaj kuyrugu
+		Farkli teknoloji servis comsumer larinin dinamik eklenebildigi bir isleyici 
+		async calisacak bir mesaj 
+		transactional coordinator ler hazirlamamiz gerekir.
+	
+	
+	
+Çoklu sistemler ile transactional işlem yapılması problemine özel olarak kullanılabilecek en az bir metodoloji önerini ana hatları ile belirtme

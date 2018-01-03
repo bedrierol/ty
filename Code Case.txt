@@ -1,0 +1,110 @@
+3. Code Case 
+
+mail sablonlari : 
+OrderMail
+LostPasswordMail
+ShipmentMail
+
+mail provider:
+ABCProvider
+CDCProvider
+
+mailtype validator olmali
+
+async olmali
+Aşırı yük altında kolay bir şekilde scale edilebilir olmalıdır
+
+Scheduled mail
+
+mail type eklenebilir
+Failure anında belli bir interval ile fail veren mail'ı tekrardan retry edebilme yetisine sahip olmalıdır
+gecici hata durumlarinda kendini korumaya alabilmelidir
+
+
+queue olacak.
+mailProcessor queue dan alacak, 
+	valide edecek
+	provider ini instantane edip, yollayacak
+	sonucunu analiz edip, retry ya da longRetry yapacak
+	
+	
+bir queue eklenecek. processor bu queue yu peek edecek
+processor response code a gore aksiyon alacak bu response code action listesi bir array dan alinabilir
+
+validator interface i tanimlanacak. IMailType bunu da implement edecek
+
+
+using System;
+
+public class Program
+{
+	public static void Main()
+	{
+		Processor processor = new Processor(new OrderMail()  , new ABCProvider());
+    processor.Process();
+	}
+}
+
+class Processor
+{
+    IMailType mailType = null;
+    IMessageSender messageSender;
+    public Processor(IMailType _mailType, IMessageSender _messageSender)
+    {
+        mailType = _mailType;
+        messageSender = _messageSender;
+    }
+    public void Process()
+    {
+		// write sablon
+        Console.WriteLine(mailType.GetMessageTemplate());
+        // send message  
+        messageSender.SendMessage("Message Text");
+    }
+}
+
+
+
+class ABCProvider : IMessageSender
+{
+    public void SendMessage(string message)
+    {
+        Console.WriteLine(String.Format("ABCProvider : {0}", message));
+    }
+}
+
+class CDCProvider : IMessageSender
+{
+    public void SendMessage(string message)
+    {
+        Console.WriteLine(String.Format("CDCProvider : {0}", message));
+    }
+}
+
+interface IMessageSender
+{
+    void SendMessage(string Message);
+}
+
+
+
+class OrderMail : IMailType
+{
+    public string GetMessageTemplate()
+    {
+        return "OrderMail";
+    }
+}
+
+class LostPasswordMail : IMailType
+{
+    public string GetMessageTemplate()
+    {
+        return "LostPasswordMail";
+    }
+}
+
+interface IMailType
+{
+	string GetMessageTemplate();
+}

@@ -23,6 +23,8 @@ namespace Data
         public IEnumerable<WmsPerformanceTableDto> GetWmsPerformanceTableInfos(
             IEnumerable<string> ignoredColumnTypes = null)
         {
+			// why need a dummy item? 
+			// TASK : Remove dummy item requirement.
             var queryResult = new[] { new { TableName = string.Empty, ColumnName = string.Empty, DataType = string.Empty, IsNullable = true, LastUpdateDate = DateTime.MinValue } }.ToList();
             var queryLastDateResult = new[] { new { TableName = string.Empty, LastUpdateDate = DateTime.MinValue } }.ToList();
             const string verticaQuery = "SELECT table_name, column_name, data_type, is_nullable FROM columns WHERE table_schema = 'extr_manual' ORDER BY ordinal_position";
@@ -31,6 +33,8 @@ namespace Data
             {
                 try
                 {
+					// verticaConnection Open failures may be handled with catch block and may be logged for further analysis
+					// TASK : catch and handle verticaConnection Open failures
                     verticaConnection.Open();
                     using (var verticaCommand = new VerticaCommand(verticaQuery, verticaConnection))
                     {
@@ -38,14 +42,19 @@ namespace Data
 
                         while (reader.Read())
                         {
+							// verticaQuery modifications may break the code below.
                             var columnType = reader[2].ToString();
 
+							// These filtering below may be done with appending into verticaQuery
+							// TASK : filter column type with appending into verticaQuery 
                             //Skip the ignored column types.
                             if (ignoredColumnTypes != null && ignoredColumnTypes.Contains(columnType))
                             {
                                 continue;
                             }
-
+							// At first tableName finding, add its LastUpdateDate to queryLastDateResult. 
+							// These operation is differs from the methods responsibility (GetWmsPerformanceTableInfos). LastUpdateDate calculation per table can be done in grouping section below. Also after closing current verticaConnection..
+							// TASK : Refactor LastUpdateDate calculation by taking these functionality into another class or change the execution place to grouping section
                             if (!queryLastDateResult.Any(x => x.TableName == reader[0].ToString()))
                             {
                                 queryLastDateResult.Add(new
@@ -113,7 +122,7 @@ namespace Data
                         catch (Exception)
                         {
                             verticaTransaction.Rollback();
-
+							// TASK : Exception details may be logged for further analysis
                             throw;
                         }
                     }
@@ -167,7 +176,7 @@ namespace Data
             }
             return rejectedRowNumbers;
         }
-
+		// TASK : exception handling for method GetLastUpdateDateOfTable
         private DateTime GetLastUpdateDateOfTable(string tableName, VerticaConnection verticaConnection)
         {
             DateTime result = DateTime.MinValue;
