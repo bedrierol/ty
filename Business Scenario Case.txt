@@ -1,16 +1,13 @@
 
-yilsonu 90 banka
-tek islemde 30+ transactional operation
-
-Sürekli artan entegrasyon ihtiyacını karışlayabilecek bir mimari tasarım önerisi
-	Farkli teknolojiler ve procedurler nedeni ile API entegrasyon paket platformlar ile bu tip flowlar ve entegrasyonlar cok hizli hazirlanip, degistirilebilmektedir.
+Entegrasyon hizlandirici cozum icin,
+	Farkli teknolojiler ve procedurler nedeni ile API-WS entegrasyon platformlar ile bu tip flowlar ve entegrasyonlar cok hizli hazirlanip, degistirilebilmektedir. Farkli ws teknolojilerinin desteklendigi connector yapilari(WS-WCF-REST) ile hizli entegrasyon ve servis kompozisyonlari ile bu entegrasyonlar otomatize edilebilir
 	In House bir cozum icin, 
+		Farkli teknolojiler ve sistemler oldugu icin bu farkli tip servislerin ortak baglanti cozumlerini hazirlama(java axis ws, java axis2 ws, java jaxrs, .net WS, .net WCF, rest generic client stublar hazirlama) ve bu servis comsumer larinin dinamik eklenebildigi bir isleyici 
 		Farkli teknolojiler ve sistemler oldugu icin bu farkli tip verileri ortaklastiracak bir veri tipi secimi: JSON - XML
-		yuksek hizli ve scale olabilen bir mesaj kuyrugu
-		Farkli teknoloji servis comsumer larinin dinamik eklenebildigi bir isleyici 
-		async calisacak bir mesaj 
-		transactional coordinator ler hazirlamamiz gerekir.
-	
-	
-	
-Çoklu sistemler ile transactional işlem yapılması problemine özel olarak kullanılabilecek en az bir metodoloji önerini ana hatları ile belirtme
+		yuksek hizli ve scale olabilen bir mesaj kuyrugu yapisi secimi
+		async calisacak bir mesaj isleme yapisi ile calisacak transactional coordinator ler hazirlamamiz gerekir.
+		servis consumptionalari ve sonrasi icin hazirlanan logicleri calistiracak bir mekanizma hazirlama. 
+			Ornek : a-b-c servis success sonucu d-e servis success sonusu flow success olarak tanimlanir.
+
+Scalable ve takip edilebilir bir sistem icin,
+Islerin queue larla ilerledigi, async servis chain leri ile sureclerin logiclerinin olusturuldugu bir pipeline mekanizmasi ile islenmesi gerekir. Bu pipelilelarin throttling, authorization, authentication, logging, serialization problemlerinin ortak olarak cozulmesi gerekir.
