@@ -23,7 +23,6 @@ namespace Data
         public IEnumerable<WmsPerformanceTableDto> GetWmsPerformanceTableInfos(
             IEnumerable<string> ignoredColumnTypes = null)
         {
-			// why need a dummy item? 
 			// TASK : Remove dummy item requirement.
             var queryResult = new[] { new { TableName = string.Empty, ColumnName = string.Empty, DataType = string.Empty, IsNullable = true, LastUpdateDate = DateTime.MinValue } }.ToList();
             var queryLastDateResult = new[] { new { TableName = string.Empty, LastUpdateDate = DateTime.MinValue } }.ToList();
@@ -46,7 +45,7 @@ namespace Data
                             var columnType = reader[2].ToString();
 
 							// These filtering below may be done with appending into verticaQuery
-							// TASK : filter column type with appending into verticaQuery 
+							// TASK : filter column type with appending into verticaQuery. Ref : Efficiency
                             //Skip the ignored column types.
                             if (ignoredColumnTypes != null && ignoredColumnTypes.Contains(columnType))
                             {
@@ -54,7 +53,7 @@ namespace Data
                             }
 							// At first tableName finding, add its LastUpdateDate to queryLastDateResult. 
 							// These operation is differs from the methods responsibility (GetWmsPerformanceTableInfos). LastUpdateDate calculation per table can be done in grouping section below. Also after closing current verticaConnection..
-							// TASK : Refactor LastUpdateDate calculation by taking these functionality into another class or change the execution place to grouping section
+							// TASK : Refactor LastUpdateDate calculation by taking these functionality into another class or change the execution place to grouping section. Ref : Single Responsibility 
                             if (!queryLastDateResult.Any(x => x.TableName == reader[0].ToString()))
                             {
                                 queryLastDateResult.Add(new
@@ -84,6 +83,7 @@ namespace Data
             //Remove the initial dummy item.
             queryResult.RemoveAt(0);
 
+			// TASK : Preparing the result type may be handled in the reader while loop, for efficiency
             //Prepare the result by using anonymous query result type.
             var tables = queryResult.GroupBy(e => e.TableName).Select(e => new WmsPerformanceTableDto
             {
@@ -122,7 +122,7 @@ namespace Data
                         catch (Exception)
                         {
                             verticaTransaction.Rollback();
-							// TASK : Exception details may be logged for further analysis
+							// TASK : TruncateWmsPerformanceTable Exception details may be logged for further analysis
                             throw;
                         }
                     }
@@ -164,7 +164,7 @@ namespace Data
                         catch (Exception ex)
                         {
                             verticaTransaction.Rollback();
-
+							// TASK : BulkInsert Exception details may be logged for further analysis
                             throw;
                         }
                     }
